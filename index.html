@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>zerotoin.com - News</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>zerotoin.com - Swipe News</title>
     <style>
         * {
             margin: 0;
@@ -12,7 +12,7 @@
         }
 
         body {
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
             background: #f5f5f5;
             display: flex;
             flex-direction: column;
@@ -39,21 +39,15 @@
             cursor: pointer;
             padding: 5px 8px;
             border-radius: 8px;
-            transition: background 0.2s;
-        }
-
-        .menu-btn:hover {
-            background: #e0e0e0;
         }
 
         .site-title {
             font-size: 1.5rem;
             font-weight: bold;
-            color: #1a1a1a;
             letter-spacing: -0.3px;
         }
 
-        /* ----- SIDEBAR MENU (hidden by default) ----- */
+        /* ----- SIDEBAR (same as before) ----- */
         .sidebar {
             position: fixed;
             top: 0;
@@ -65,27 +59,16 @@
             transition: left 0.3s ease;
             z-index: 200;
             padding-top: 70px;
-            display: flex;
-            flex-direction: column;
         }
-
-        .sidebar.open {
-            left: 0;
-        }
-
+        .sidebar.open { left: 0; }
         .sidebar a {
+            display: block;
             padding: 15px 25px;
             text-decoration: none;
             color: #333;
             font-size: 1.2rem;
             border-bottom: 1px solid #eee;
-            transition: background 0.2s;
         }
-
-        .sidebar a:hover {
-            background: #f0f0f0;
-        }
-
         .close-sidebar {
             position: absolute;
             top: 15px;
@@ -95,8 +78,6 @@
             border: none;
             cursor: pointer;
         }
-
-        /* Overlay when sidebar is open */
         .overlay {
             position: fixed;
             top: 0;
@@ -107,81 +88,121 @@
             z-index: 150;
             display: none;
         }
+        .overlay.active { display: block; }
 
-        .overlay.active {
-            display: block;
-        }
-
-        /* ----- MAIN NEWS CONTENT ----- */
-        .news-container {
+        /* ----- MIDDLE: SWIPING CAROUSEL (horizontal) ----- */
+        .carousel-container {
             flex: 1;
-            max-width: 1200px;
-            margin: 30px auto;
-            padding: 0 20px;
-            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 20px 0;
+            background: #f0f2f5;
         }
 
-        .news-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 25px;
+        .carousel-wrapper {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            touch-action: pan-y pinch-zoom; /* allow vertical scroll, but horizontal drag works */
+        }
+
+        .carousel-track {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            padding: 20px 10%;
+            cursor: grab;
+        }
+        .carousel-track:active {
+            cursor: grabbing;
+        }
+
+        /* Hide scrollbar for cleaner look (optional) */
+        .carousel-track::-webkit-scrollbar {
+            height: 6px;
+        }
+        .carousel-track::-webkit-scrollbar-track {
+            background: #ddd;
+            border-radius: 10px;
+        }
+        .carousel-track::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
         }
 
         .news-card {
+            flex: 0 0 80%;
+            max-width: 350px;
+            scroll-snap-align: center;
             background: white;
-            border-radius: 16px;
+            border-radius: 24px;
             overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
         }
-
         .news-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 20px rgba(0,0,0,0.12);
+            transform: scale(1.02);
         }
 
         .news-card img {
             width: 100%;
-            height: 200px;
+            height: 220px;
             object-fit: cover;
-            display: block;
         }
-
         .news-content {
-            padding: 18px;
+            padding: 20px;
         }
-
         .news-title {
-            font-size: 1.25rem;
+            font-size: 1.3rem;
             margin-bottom: 8px;
-            color: #111;
         }
-
         .news-summary {
             color: #555;
+            margin: 10px 0;
             line-height: 1.4;
-            margin-bottom: 12px;
         }
-
         .news-date {
             font-size: 0.8rem;
             color: #888;
         }
 
-        /* ----- BOTTOM NAVIGATION BAR ----- */
+        /* Navigation arrows (for desktop) */
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.5);
+            color: white;
+            border: none;
+            font-size: 2rem;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 10;
+            transition: 0.2s;
+        }
+        .carousel-btn:hover {
+            background: rgba(0,0,0,0.8);
+        }
+        .btn-prev { left: 15px; }
+        .btn-next { right: 15px; }
+
+        /* ----- BOTTOM NAV ----- */
         .bottom-nav {
             background: white;
             border-top: 1px solid #eaeaea;
             display: flex;
             justify-content: space-around;
-            align-items: center;
             padding: 10px 16px 14px;
             position: sticky;
             bottom: 0;
-            width: 100%;
-            box-shadow: 0 -2px 8px rgba(0,0,0,0.03);
         }
-
         .nav-item {
             display: flex;
             flex-direction: column;
@@ -190,25 +211,17 @@
             color: #666;
             font-size: 0.75rem;
             gap: 4px;
-            transition: color 0.2s;
         }
+        .nav-item span:first-child { font-size: 1.5rem; }
+        .nav-item.active { color: #0077ff; }
 
-        .nav-item span:first-child {
-            font-size: 1.5rem;
+        @media (max-width: 768px) {
+            .carousel-track { padding: 20px 5%; }
+            .news-card { flex: 0 0 85%; }
+            .carousel-btn { display: none; } /* arrows hidden on mobile, swipe only */
         }
-
-        .nav-item.active {
-            color: #0077ff;
-        }
-
-        .nav-item:hover {
-            color: #0077ff;
-        }
-
-        /* Responsive: on very small screens, adjust font */
-        @media (max-width: 480px) {
-            .site-title { font-size: 1.2rem; }
-            .news-title { font-size: 1.1rem; }
+        @media (min-width: 1024px) {
+            .news-card { flex: 0 0 30%; max-width: 400px; }
         }
     </style>
 </head>
@@ -220,87 +233,74 @@
         <div class="site-title">zerotoin.com</div>
     </div>
 
-    <!-- Sidebar Menu -->
+    <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <button class="close-sidebar" id="closeSidebar">✕</button>
         <a href="#">🏠 Home</a>
         <a href="#">🎮 Play</a>
         <a href="#">📂 Categories</a>
         <a href="#">👤 Account</a>
-        <a href="#">📰 Latest News</a>
-        <a href="#">⭐ Favorites</a>
+        <a href="#">⭐ Saved</a>
     </div>
     <div class="overlay" id="overlay"></div>
 
-    <!-- News Section -->
-    <main class="news-container">
-        <div class="news-grid" id="newsGrid">
-            <!-- News cards will be injected by JavaScript -->
+    <!-- MIDDLE: SWIPING CAROUSEL -->
+    <div class="carousel-container">
+        <div class="carousel-wrapper">
+            <button class="carousel-btn btn-prev" id="prevBtn">‹</button>
+            <div class="carousel-track" id="carouselTrack">
+                <!-- News cards will be inserted here by JS -->
+            </div>
+            <button class="carousel-btn btn-next" id="nextBtn">›</button>
         </div>
-    </main>
+    </div>
 
-    <!-- Bottom Navigation -->
+    <!-- Bottom Nav -->
     <div class="bottom-nav">
-        <a href="#" class="nav-item active" data-nav="home">
-            <span>🏠</span>
-            <span>Home</span>
-        </a>
-        <a href="#" class="nav-item" data-nav="play">
-            <span>🎮</span>
-            <span>Play</span>
-        </a>
-        <a href="#" class="nav-item" data-nav="categories">
-            <span>📂</span>
-            <span>Categories</span>
-        </a>
-        <a href="#" class="nav-item" data-nav="account">
-            <span>👤</span>
-            <span>Account</span>
-        </a>
+        <a href="#" class="nav-item active" data-nav="home"><span>🏠</span><span>Home</span></a>
+        <a href="#" class="nav-item" data-nav="play"><span>🎮</span><span>Play</span></a>
+        <a href="#" class="nav-item" data-nav="categories"><span>📂</span><span>Categories</span></a>
+        <a href="#" class="nav-item" data-nav="account"><span>👤</span><span>Account</span></a>
     </div>
 
     <script>
-        // ----- NEWS DATA (you can replace with your own) -----
-        // Each news item can use a Cloudinary image URL
+        // ----- NEWS DATA (Replace image URLs with your Cloudinary links) -----
         const newsData = [
             {
-                title: "Breaking: New Technology Trends 2026",
-                summary: "Discover the latest innovations shaping our world this year.",
+                title: "Breaking: AI Changes Everything",
+                summary: "New AI models are reshaping industries worldwide.",
                 date: "June 10, 2026",
-                imageUrl: "https://res.cloudinary.com/demo/image/upload/w_800,h_600,c_fill/sample.jpg"  // Replace with your Cloudinary URL
+                imageUrl: "https://res.cloudinary.com/demo/image/upload/w_800,h_600,c_fill/sample.jpg"
             },
             {
-                title: "Gaming Updates: Summer Release Dates",
-                summary: "All the upcoming games you need to watch out for this season.",
+                title: "Gaming Highlights 2026",
+                summary: "Top upcoming games you cannot miss.",
                 date: "June 9, 2026",
                 imageUrl: "https://res.cloudinary.com/demo/image/upload/w_800,h_600,c_fill/sample_gears.jpg"
             },
             {
-                title: "Top 5 Tips for Better Productivity",
-                summary: "Small changes that can make a big difference in your daily routine.",
+                title: "Health & Wellness Trends",
+                summary: "Simple habits for a healthier life.",
                 date: "June 8, 2026",
-                imageUrl: "https://res.cloudinary.com/demo/image/upload/w_800,h_600,c_fill/office.jpg"
+                imageUrl: "https://res.cloudinary.com/demo/image/upload/w_800,h_600,c_fill/health.jpg"
             },
             {
-                title: "Space Exploration: New Discoveries",
-                summary: "Scientists reveal exciting findings from the latest Mars mission.",
+                title: "Space Mission Success",
+                summary: "New images from Mars rover amaze scientists.",
                 date: "June 7, 2026",
                 imageUrl: "https://res.cloudinary.com/demo/image/upload/w_800,h_600,c_fill/space.jpg"
             },
             {
-                title: "How to Stay Healthy While Working From Home",
-                summary: "Ergonomic tips and wellness routines for remote workers.",
+                title: "Finance Tips for Beginners",
+                summary: "Start investing with confidence.",
                 date: "June 6, 2026",
-                imageUrl: "https://res.cloudinary.com/demo/image/upload/w_800,h_600,c_fill/health.jpg"
+                imageUrl: "https://res.cloudinary.com/demo/image/upload/w_800,h_600,c_fill/finance.jpg"
             }
         ];
 
-        // Function to render news cards
-        function renderNews() {
-            const newsGrid = document.getElementById('newsGrid');
-            if (!newsGrid) return;
-            
-            newsGrid.innerHTML = newsData.map(news => `
+        const track = document.getElementById('carouselTrack');
+        function renderCards() {
+            track.innerHTML = newsData.map(news => `
                 <div class="news-card">
                     <img src="${news.imageUrl}" alt="${news.title}" loading="lazy">
                     <div class="news-content">
@@ -311,53 +311,73 @@
                 </div>
             `).join('');
         }
+        renderCards();
 
-        // Sidebar toggle logic
+        // Sidebar logic
         const menuBtn = document.getElementById('menuBtn');
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
         const closeSidebar = document.getElementById('closeSidebar');
+        function openSidebar() { sidebar.classList.add('open'); overlay.classList.add('active'); }
+        function closeSidebarFunc() { sidebar.classList.remove('open'); overlay.classList.remove('active'); }
+        menuBtn.addEventListener('click', openSidebar);
+        closeSidebar.addEventListener('click', closeSidebarFunc);
+        overlay.addEventListener('click', closeSidebarFunc);
 
-        function openSidebar() {
-            sidebar.classList.add('open');
-            overlay.classList.add('active');
+        // Carousel swipe (horizontal scroll) is native: user can drag/scroll. 
+        // Buttons for desktop to scroll left/right.
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        if (prevBtn && nextBtn) {
+            prevBtn.addEventListener('click', () => {
+                track.scrollBy({ left: -300, behavior: 'smooth' });
+            });
+            nextBtn.addEventListener('click', () => {
+                track.scrollBy({ left: 300, behavior: 'smooth' });
+            });
         }
 
-        function closeSidebarFunc() {
-            sidebar.classList.remove('open');
-            overlay.classList.remove('active');
-        }
-
-        if (menuBtn) menuBtn.addEventListener('click', openSidebar);
-        if (closeSidebar) closeSidebar.addEventListener('click', closeSidebarFunc);
-        if (overlay) overlay.addEventListener('click', closeSidebarFunc);
-
-        // Bottom navigation highlight (simple client-side routing simulation)
+        // Bottom nav highlight (simple)
         const navItems = document.querySelectorAll('.nav-item');
         navItems.forEach(item => {
             item.addEventListener('click', (e) => {
-                // Remove active class from all
                 navItems.forEach(nav => nav.classList.remove('active'));
                 item.classList.add('active');
-                
-                // You can add custom behavior for each tab later.
-                // For now, just demo an alert (optional)
                 const tab = item.getAttribute('data-nav');
                 if (tab === 'home') {
-                    // Show all news (already there)
-                    renderNews();
-                } else if (tab === 'play') {
-                    alert('Play section – you can add games or links here');
-                } else if (tab === 'categories') {
-                    alert('Categories – filter news by topic');
-                } else if (tab === 'account') {
-                    alert('Account – user profile (demo)');
+                    // nothing extra
+                } else {
+                    alert(`"${tab}" section coming soon – you can customize.`);
                 }
             });
         });
 
-        // Initial render
-        renderNews();
+        // Small touch: if user wants to drag with mouse on desktop
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+        track.addEventListener('mousedown', (e) => {
+            isDown = true;
+            startX = e.pageX - track.offsetLeft;
+            scrollLeft = track.scrollLeft;
+            track.style.cursor = 'grabbing';
+        });
+        track.addEventListener('mouseleave', () => {
+            isDown = false;
+            track.style.cursor = 'grab';
+        });
+        track.addEventListener('mouseup', () => {
+            isDown = false;
+            track.style.cursor = 'grab';
+        });
+        track.addEventListener('mousemove', (e) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - track.offsetLeft;
+            const walk = (x - startX) * 2; // scroll speed
+            track.scrollLeft = scrollLeft - walk;
+        });
+        track.style.cursor = 'grab';
     </script>
 </body>
 </html>
