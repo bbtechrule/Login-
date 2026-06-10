@@ -9,7 +9,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            user-select: none; /* prevents text selection while swiping */
+            user-select: none;
         }
 
         body {
@@ -21,7 +21,7 @@
             position: fixed;
         }
 
-        /* ----- TOP BAR (fixed above swipe area) ----- */
+        /* ----- TOP BAR ----- */
         .top-bar {
             position: fixed;
             top: 0;
@@ -49,9 +49,24 @@
             font-size: 1.5rem;
             font-weight: bold;
             letter-spacing: -0.3px;
+            flex: 1;
+        }
+        /* Fullscreen button style */
+        .fullscreen-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            font-size: 22px;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+        .fullscreen-btn:hover {
+            background: rgba(255,255,255,0.4);
         }
 
-        /* ----- SIDEBAR MENU (same as before) ----- */
+        /* ----- SIDEBAR MENU ----- */
         .sidebar {
             position: fixed;
             top: 0;
@@ -94,7 +109,7 @@
         }
         .overlay.active { display: block; }
 
-        /* ----- MAIN SWIPE CONTAINER (vertical snap) ----- */
+        /* ----- SWIPE CONTAINER ----- */
         .swipe-container {
             height: 100vh;
             width: 100%;
@@ -102,14 +117,12 @@
             scroll-snap-type: y mandatory;
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
-            /* hide scrollbar for cleaner look */
             scrollbar-width: none;
         }
         .swipe-container::-webkit-scrollbar {
             display: none;
         }
 
-        /* each news item takes full viewport height, with snap */
         .news-item {
             scroll-snap-align: start;
             height: 100vh;
@@ -121,7 +134,7 @@
             background: #0a0a0a;
         }
 
-        /* 9:16 image container – centered and maintaining ratio */
+        /* 9:16 image container */
         .image-916 {
             width: 100%;
             height: 100%;
@@ -136,14 +149,12 @@
             object-fit: cover;
             aspect-ratio: 9 / 16;
         }
-        /* on very wide screens, keep 9:16 centered */
         @media (min-aspect-ratio: 9/16) {
             .image-916 img {
                 width: auto;
                 height: 100%;
             }
         }
-        /* on tall screens, fit width */
         @media (max-aspect-ratio: 9/16) {
             .image-916 img {
                 width: 100%;
@@ -151,7 +162,7 @@
             }
         }
 
-        /* text overlay on bottom of each news item */
+        /* text overlay */
         .news-overlay {
             position: absolute;
             bottom: 0;
@@ -160,7 +171,7 @@
             background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
             color: white;
             padding: 80px 20px 30px;
-            pointer-events: none; /* allows swiping through text */
+            pointer-events: none;
         }
         .news-title {
             font-size: 1.8rem;
@@ -179,7 +190,7 @@
             opacity: 0.7;
         }
 
-        /* bottom navigation (fixed) */
+        /* bottom navigation */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -206,7 +217,7 @@
         .nav-item span:first-child { font-size: 1.5rem; }
         .nav-item.active { color: #0077ff; }
 
-        /* hint for desktop users (optional) */
+        /* hint */
         .swipe-hint {
             position: fixed;
             bottom: 80px;
@@ -225,10 +236,11 @@
 </head>
 <body>
 
-    <!-- Top Bar -->
+    <!-- Top Bar with Fullscreen Button -->
     <div class="top-bar">
         <button class="menu-btn" id="menuBtn">☰</button>
         <div class="site-title">zerotoin.com</div>
+        <button class="fullscreen-btn" id="fullscreenBtn">⛶</button>
     </div>
 
     <!-- Sidebar -->
@@ -244,7 +256,7 @@
 
     <!-- Swipeable vertical news list -->
     <div class="swipe-container" id="swipeContainer">
-        <!-- news items will be injected here by JavaScript -->
+        <!-- news items injected by JS -->
     </div>
 
     <!-- Bottom Nav -->
@@ -258,8 +270,6 @@
 
     <script>
         // ---------- NEWS DATA (replace with your Cloudinary image URLs) ----------
-        // Each image should ideally be uploaded to Cloudinary and you get the URL.
-        // For 9:16 effect, any image will be cropped/centered to 9:16.
         const newsData = [
             {
                 title: "Breaking: AI Revolution",
@@ -293,10 +303,8 @@
             }
         ];
 
-        // Get container
         const swipeContainer = document.getElementById('swipeContainer');
 
-        // Generate each news item with 9:16 image and text overlay
         function renderNewsItems() {
             swipeContainer.innerHTML = newsData.map(news => `
                 <div class="news-item">
@@ -312,6 +320,13 @@
             `).join('');
         }
         renderNewsItems();
+
+        // ---------- FULLSCREEN FUNCTION (your provided model) ----------
+        function openFullscreen() {
+            document.documentElement.requestFullscreen();
+        }
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
+        fullscreenBtn.addEventListener('click', openFullscreen);
 
         // ---------- SIDEBAR MENU LOGIC ----------
         const menuBtn = document.getElementById('menuBtn');
@@ -331,15 +346,13 @@
                 navItems.forEach(nav => nav.classList.remove('active'));
                 item.classList.add('active');
                 const tab = item.getAttribute('data-nav');
-                if (tab === 'home') {
-                    // already showing news
-                } else {
+                if (tab !== 'home') {
                     alert(`"${tab}" section – you can customize this later.`);
                 }
             });
         });
 
-        // Additional: For desktop users, arrow keys (up/down) to swipe
+        // Keyboard arrow keys for desktop
         window.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowDown') {
                 swipeContainer.scrollBy({ top: window.innerHeight, behavior: 'smooth' });
@@ -350,8 +363,7 @@
             }
         });
 
-        // Simple console log to confirm
-        console.log("Vertical swipe news ready – swipe up/down like Instagram.");
+        console.log("Vertical swipe news ready – fullscreen button added.");
     </script>
 </body>
 </html>
