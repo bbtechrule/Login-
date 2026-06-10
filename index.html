@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>zerotoin.com</title>
+    <style>
+        .news-card { border: 1px solid #ddd; margin: 20px; padding: 15px; }
+        img { max-width: 100%; }
+    </style>
+</head>
+<body>
+    <h1>Latest News</h1>
+    <div id="news"></div>
+
+    <script>
+        // Your free API key from GNews (get one below)
+        const API_KEY = "YOUR_API_KEY_HERE";
+        const url = `https://gnews.io/api/v4/top-headlines?token=${API_KEY}&lang=en&max=10`;
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const newsDiv = document.getElementById('news');
+                data.articles.forEach(article => {
+                    const card = document.createElement('div');
+                    card.className = 'news-card';
+                    card.innerHTML = `
+                        <h2>${article.title}</h2>
+                        <img src="${article.image}" alt="news image">
+                        <p>${article.description}</p>
+                        <a href="${article.url}" target="_blank">Read more</a>
+                    `;
+                    newsDiv.appendChild(card);
+                });
+            });
+    </script>
+</body>
+</html>
