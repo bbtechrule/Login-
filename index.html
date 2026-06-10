@@ -1,46 +1,363 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>My News Site</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>zerotoin.com - News</title>
     <style>
-        body { font-family: Arial; margin: 0; padding: 20px; background: #f0f0f0; }
-        .news-item { background: white; margin-bottom: 20px; padding: 15px; border-radius: 8px; display: flex; gap: 15px; }
-        .news-item img { width: 150px; height: 100px; object-fit: cover; border-radius: 5px; }
-        h2 { margin: 0 0 10px; }
-        .date { color: gray; font-size: 14px; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* ----- TOP BAR ----- */
+        .top-bar {
+            background: white;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            padding: 5px 8px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .menu-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .site-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1a1a1a;
+            letter-spacing: -0.3px;
+        }
+
+        /* ----- SIDEBAR MENU (hidden by default) ----- */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100%;
+            background: white;
+            box-shadow: 2px 0 12px rgba(0,0,0,0.1);
+            transition: left 0.3s ease;
+            z-index: 200;
+            padding-top: 70px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.open {
+            left: 0;
+        }
+
+        .sidebar a {
+            padding: 15px 25px;
+            text-decoration: none;
+            color: #333;
+            font-size: 1.2rem;
+            border-bottom: 1px solid #eee;
+            transition: background 0.2s;
+        }
+
+        .sidebar a:hover {
+            background: #f0f0f0;
+        }
+
+        .close-sidebar {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* Overlay when sidebar is open */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.4);
+            z-index: 150;
+            display: none;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        /* ----- MAIN NEWS CONTENT ----- */
+        .news-container {
+            flex: 1;
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+            width: 100%;
+        }
+
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .news-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .news-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.12);
+        }
+
+        .news-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .news-content {
+            padding: 18px;
+        }
+
+        .news-title {
+            font-size: 1.25rem;
+            margin-bottom: 8px;
+            color: #111;
+        }
+
+        .news-summary {
+            color: #555;
+            line-height: 1.4;
+            margin-bottom: 12px;
+        }
+
+        .news-date {
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        /* ----- BOTTOM NAVIGATION BAR ----- */
+        .bottom-nav {
+            background: white;
+            border-top: 1px solid #eaeaea;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px 16px 14px;
+            position: sticky;
+            bottom: 0;
+            width: 100%;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.03);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #666;
+            font-size: 0.75rem;
+            gap: 4px;
+            transition: color 0.2s;
+        }
+
+        .nav-item span:first-child {
+            font-size: 1.5rem;
+        }
+
+        .nav-item.active {
+            color: #0077ff;
+        }
+
+        .nav-item:hover {
+            color: #0077ff;
+        }
+
+        /* Responsive: on very small screens, adjust font */
+        @media (max-width: 480px) {
+            .site-title { font-size: 1.2rem; }
+            .news-title { font-size: 1.1rem; }
+        }
     </style>
 </head>
 <body>
-    <h1>📰 My News Website</h1>
-    <div id="news-list"></div>
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <button class="menu-btn" id="menuBtn">☰</button>
+        <div class="site-title">zerotoin.com</div>
+    </div>
+
+    <!-- Sidebar Menu -->
+    <div class="sidebar" id="sidebar">
+        <button class="close-sidebar" id="closeSidebar">✕</button>
+        <a href="#">🏠 Home</a>
+        <a href="#">🎮 Play</a>
+        <a href="#">📂 Categories</a>
+        <a href="#">👤 Account</a>
+        <a href="#">📰 Latest News</a>
+        <a href="#">⭐ Favorites</a>
+    </div>
+    <div class="overlay" id="overlay"></div>
+
+    <!-- News Section -->
+    <main class="news-container">
+        <div class="news-grid" id="newsGrid">
+            <!-- News cards will be injected by JavaScript -->
+        </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <a href="#" class="nav-item active" data-nav="home">
+            <span>🏠</span>
+            <span>Home</span>
+        </a>
+        <a href="#" class="nav-item" data-nav="play">
+            <span>🎮</span>
+            <span>Play</span>
+        </a>
+        <a href="#" class="nav-item" data-nav="categories">
+            <span>📂</span>
+            <span>Categories</span>
+        </a>
+        <a href="#" class="nav-item" data-nav="account">
+            <span>👤</span>
+            <span>Account</span>
+        </a>
+    </div>
 
     <script>
-        // This is where you will manually add your news
-        const myNews = [
+        // ----- NEWS DATA (you can replace with your own) -----
+        // Each news item can use a Cloudinary image URL
+        const newsData = [
             {
-                title: "My first news article",
-                date: "2026-06-10",
-                summary: "This is a short summary of my news.",
-                imageUrl: "YOUR_CLOUDINARY_IMAGE_URL",
-                link: "#"
+                title: "Breaking: New Technology Trends 2026",
+                summary: "Discover the latest innovations shaping our world this year.",
+                date: "June 10, 2026",
+                imageUrl: "https://res.cloudinary.com/demo/image/upload/w_800,h_600,c_fill/sample.jpg"  // Replace with your Cloudinary URL
             },
-            // Add more news items here following the same format
+            {
+                title: "Gaming Updates: Summer Release Dates",
+                summary: "All the upcoming games you need to watch out for this season.",
+                date: "June 9, 2026",
+                imageUrl: "https://res.cloudinary.com/demo/image/upload/w_800,h_600,c_fill/sample_gears.jpg"
+            },
+            {
+                title: "Top 5 Tips for Better Productivity",
+                summary: "Small changes that can make a big difference in your daily routine.",
+                date: "June 8, 2026",
+                imageUrl: "https://res.cloudinary.com/demo/image/upload/w_800,h_600,c_fill/office.jpg"
+            },
+            {
+                title: "Space Exploration: New Discoveries",
+                summary: "Scientists reveal exciting findings from the latest Mars mission.",
+                date: "June 7, 2026",
+                imageUrl: "https://res.cloudinary.com/demo/image/upload/w_800,h_600,c_fill/space.jpg"
+            },
+            {
+                title: "How to Stay Healthy While Working From Home",
+                summary: "Ergonomic tips and wellness routines for remote workers.",
+                date: "June 6, 2026",
+                imageUrl: "https://res.cloudinary.com/demo/image/upload/w_800,h_600,c_fill/health.jpg"
+            }
         ];
 
-        const container = document.getElementById('news-list');
-        myNews.forEach(news => {
-            container.innerHTML += `
-                <div class="news-item">
-                    <img src="${news.imageUrl}" alt="news image">
-                    <div>
-                        <h2>${news.title}</h2>
-                        <div class="date">${news.date}</div>
-                        <p>${news.summary}</p>
-                        <a href="${news.link}">Read more →</a>
+        // Function to render news cards
+        function renderNews() {
+            const newsGrid = document.getElementById('newsGrid');
+            if (!newsGrid) return;
+            
+            newsGrid.innerHTML = newsData.map(news => `
+                <div class="news-card">
+                    <img src="${news.imageUrl}" alt="${news.title}" loading="lazy">
+                    <div class="news-content">
+                        <h3 class="news-title">${news.title}</h3>
+                        <p class="news-summary">${news.summary}</p>
+                        <div class="news-date">📅 ${news.date}</div>
                     </div>
                 </div>
-            `;
+            `).join('');
+        }
+
+        // Sidebar toggle logic
+        const menuBtn = document.getElementById('menuBtn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        const closeSidebar = document.getElementById('closeSidebar');
+
+        function openSidebar() {
+            sidebar.classList.add('open');
+            overlay.classList.add('active');
+        }
+
+        function closeSidebarFunc() {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+        }
+
+        if (menuBtn) menuBtn.addEventListener('click', openSidebar);
+        if (closeSidebar) closeSidebar.addEventListener('click', closeSidebarFunc);
+        if (overlay) overlay.addEventListener('click', closeSidebarFunc);
+
+        // Bottom navigation highlight (simple client-side routing simulation)
+        const navItems = document.querySelectorAll('.nav-item');
+        navItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                // Remove active class from all
+                navItems.forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+                
+                // You can add custom behavior for each tab later.
+                // For now, just demo an alert (optional)
+                const tab = item.getAttribute('data-nav');
+                if (tab === 'home') {
+                    // Show all news (already there)
+                    renderNews();
+                } else if (tab === 'play') {
+                    alert('Play section – you can add games or links here');
+                } else if (tab === 'categories') {
+                    alert('Categories – filter news by topic');
+                } else if (tab === 'account') {
+                    alert('Account – user profile (demo)');
+                }
+            });
         });
+
+        // Initial render
+        renderNews();
     </script>
 </body>
 </html>
