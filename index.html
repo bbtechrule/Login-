@@ -9,7 +9,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            user-select: none; /* prevents text selection while swiping */
+            user-select: none;
         }
 
         body {
@@ -19,17 +19,17 @@
             height: 100vh;
             width: 100vw;
             position: fixed;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* ----- TOP BAR (fixed above swipe area) ----- */
+        /* ----- TOP BAR: 5% height (0.5 of 10 = 5vh) ----- */
         .top-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
+            height: 5vh;
+            min-height: 44px; /* ensures it's tappable on phones */
             background: rgba(0,0,0,0.7);
             backdrop-filter: blur(10px);
-            padding: 12px 20px;
+            padding: 0 20px;
             display: flex;
             align-items: center;
             gap: 15px;
@@ -39,19 +39,18 @@
         .menu-btn {
             background: none;
             border: none;
-            font-size: 28px;
+            font-size: 24px;
             color: white;
             cursor: pointer;
             padding: 5px 8px;
             border-radius: 8px;
         }
         .site-title {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: bold;
-            letter-spacing: -0.3px;
         }
 
-        /* ----- SIDEBAR MENU (same as before) ----- */
+        /* ----- SIDEBAR (unchanged) ----- */
         .sidebar {
             position: fixed;
             top: 0;
@@ -94,25 +93,23 @@
         }
         .overlay.active { display: block; }
 
-        /* ----- MAIN SWIPE CONTAINER (vertical snap) ----- */
+        /* ----- SWIPE CONTAINER: takes remaining height (90vh) ----- */
         .swipe-container {
-            height: 100vh;
+            height: 90vh;
             width: 100%;
             overflow-y: auto;
             scroll-snap-type: y mandatory;
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
-            /* hide scrollbar for cleaner look */
             scrollbar-width: none;
         }
         .swipe-container::-webkit-scrollbar {
             display: none;
         }
 
-        /* each news item takes full viewport height, with snap */
         .news-item {
             scroll-snap-align: start;
-            height: 100vh;
+            height: 90vh;
             width: 100%;
             position: relative;
             display: flex;
@@ -121,7 +118,7 @@
             background: #0a0a0a;
         }
 
-        /* 9:16 image container – centered and maintaining ratio */
+        /* 9:16 image container */
         .image-916 {
             width: 100%;
             height: 100%;
@@ -136,14 +133,12 @@
             object-fit: cover;
             aspect-ratio: 9 / 16;
         }
-        /* on very wide screens, keep 9:16 centered */
         @media (min-aspect-ratio: 9/16) {
             .image-916 img {
                 width: auto;
                 height: 100%;
             }
         }
-        /* on tall screens, fit width */
         @media (max-aspect-ratio: 9/16) {
             .image-916 img {
                 width: 100%;
@@ -151,7 +146,7 @@
             }
         }
 
-        /* text overlay on bottom of each news item */
+        /* text overlay */
         .news-overlay {
             position: absolute;
             bottom: 0;
@@ -159,37 +154,34 @@
             right: 0;
             background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
             color: white;
-            padding: 80px 20px 30px;
-            pointer-events: none; /* allows swiping through text */
+            padding: 40px 20px 20px;
+            pointer-events: none;
         }
         .news-title {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: bold;
-            margin-bottom: 8px;
-            text-shadow: 0 1px 3px black;
+            margin-bottom: 6px;
         }
         .news-summary {
-            font-size: 1rem;
+            font-size: 0.95rem;
             opacity: 0.9;
-            margin-bottom: 8px;
-            max-width: 90%;
+            margin-bottom: 6px;
         }
         .news-date {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             opacity: 0.7;
         }
 
-        /* bottom navigation (fixed) */
+        /* ----- BOTTOM NAV: 5% height (0.5 of 10 = 5vh) ----- */
         .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
+            height: 5vh;
+            min-height: 44px;
             background: rgba(0,0,0,0.8);
             backdrop-filter: blur(15px);
             display: flex;
             justify-content: space-around;
-            padding: 10px 16px 18px;
+            align-items: center;
+            padding: 0 16px;
             z-index: 200;
             border-top: 0.5px solid rgba(255,255,255,0.2);
         }
@@ -200,23 +192,21 @@
             text-decoration: none;
             color: #aaa;
             font-size: 0.7rem;
-            gap: 4px;
-            transition: color 0.2s;
+            gap: 2px;
         }
-        .nav-item span:first-child { font-size: 1.5rem; }
+        .nav-item span:first-child { font-size: 1.3rem; }
         .nav-item.active { color: #0077ff; }
 
-        /* hint for desktop users (optional) */
         .swipe-hint {
             position: fixed;
-            bottom: 80px;
+            bottom: 6vh;
             left: 50%;
             transform: translateX(-50%);
             background: rgba(0,0,0,0.5);
             color: white;
-            padding: 5px 12px;
+            padding: 4px 10px;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 10px;
             z-index: 200;
             pointer-events: none;
             white-space: nowrap;
@@ -225,7 +215,7 @@
 </head>
 <body>
 
-    <!-- Top Bar -->
+    <!-- Top Bar (5vh) -->
     <div class="top-bar">
         <button class="menu-btn" id="menuBtn">☰</button>
         <div class="site-title">zerotoin.com</div>
@@ -242,24 +232,22 @@
     </div>
     <div class="overlay" id="overlay"></div>
 
-    <!-- Swipeable vertical news list -->
+    <!-- Swipe container (90vh) -->
     <div class="swipe-container" id="swipeContainer">
-        <!-- news items will be injected here by JavaScript -->
+        <!-- news items injected -->
     </div>
 
-    <!-- Bottom Nav -->
+    <!-- Bottom Nav (5vh) -->
     <div class="bottom-nav">
         <a href="#" class="nav-item active" data-nav="home"><span>🏠</span><span>Home</span></a>
         <a href="#" class="nav-item" data-nav="play"><span>🎮</span><span>Play</span></a>
         <a href="#" class="nav-item" data-nav="categories"><span>📂</span><span>Categories</span></a>
         <a href="#" class="nav-item" data-nav="account"><span>👤</span><span>Account</span></a>
     </div>
-    <div class="swipe-hint">⬆️ Swipe up / down ⬇️</div>
+    <div class="swipe-hint">⬆️ Swipe up/down ⬇️</div>
 
     <script>
-        // ---------- NEWS DATA (replace with your Cloudinary image URLs) ----------
-        // Each image should ideally be uploaded to Cloudinary and you get the URL.
-        // For 9:16 effect, any image will be cropped/centered to 9:16.
+        // ----- YOUR NEWS DATA (replace imageUrl with Cloudinary links) -----
         const newsData = [
             {
                 title: "Breaking: AI Revolution",
@@ -269,7 +257,7 @@
             },
             {
                 title: "Gaming Awards 2026",
-                summary: "All winners and biggest surprises of the year.",
+                summary: "All winners and biggest surprises.",
                 date: "June 10, 2026",
                 imageUrl: "https://res.cloudinary.com/demo/image/upload/w_900,h_1600,c_fill/sample_gears.jpg"
             },
@@ -293,10 +281,8 @@
             }
         ];
 
-        // Get container
         const swipeContainer = document.getElementById('swipeContainer');
 
-        // Generate each news item with 9:16 image and text overlay
         function renderNewsItems() {
             swipeContainer.innerHTML = newsData.map(news => `
                 <div class="news-item">
@@ -313,7 +299,7 @@
         }
         renderNewsItems();
 
-        // ---------- SIDEBAR MENU LOGIC ----------
+        // Sidebar logic
         const menuBtn = document.getElementById('menuBtn');
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
@@ -324,34 +310,29 @@
         closeSidebar.addEventListener('click', closeSidebarFunc);
         overlay.addEventListener('click', closeSidebarFunc);
 
-        // ---------- BOTTOM NAV HIGHLIGHT ----------
+        // Bottom nav highlight (simple)
         const navItems = document.querySelectorAll('.nav-item');
         navItems.forEach(item => {
             item.addEventListener('click', (e) => {
                 navItems.forEach(nav => nav.classList.remove('active'));
                 item.classList.add('active');
                 const tab = item.getAttribute('data-nav');
-                if (tab === 'home') {
-                    // already showing news
-                } else {
-                    alert(`"${tab}" section – you can customize this later.`);
+                if (tab !== 'home') {
+                    alert(`"${tab}" section – you can customize later.`);
                 }
             });
         });
 
-        // Additional: For desktop users, arrow keys (up/down) to swipe
+        // Keyboard arrows for desktop
         window.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowDown') {
-                swipeContainer.scrollBy({ top: window.innerHeight, behavior: 'smooth' });
+                swipeContainer.scrollBy({ top: window.innerHeight * 0.9, behavior: 'smooth' });
                 e.preventDefault();
             } else if (e.key === 'ArrowUp') {
-                swipeContainer.scrollBy({ top: -window.innerHeight, behavior: 'smooth' });
+                swipeContainer.scrollBy({ top: -window.innerHeight * 0.9, behavior: 'smooth' });
                 e.preventDefault();
             }
         });
-
-        // Simple console log to confirm
-        console.log("Vertical swipe news ready – swipe up/down like Instagram.");
     </script>
 </body>
 </html>
